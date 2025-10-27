@@ -19,3 +19,5 @@ jobs:
       - name: show files
         run: |
           ls -ltr
+          python --version
+          git status
