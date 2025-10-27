@@ -21,4 +21,4 @@ jobs:
           ls -ltr
           python --version
           git status
-          תייצר תקלה
+        
