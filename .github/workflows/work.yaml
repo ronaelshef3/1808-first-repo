@@ -6,6 +6,10 @@ on:
     branches:
       - main
       - master
+    paths-ignore:
+      - 'mychar/values-image.yaml'
+      - 'mychar/values.yaml'
+
 
 permissions: write-all
 jobs:
