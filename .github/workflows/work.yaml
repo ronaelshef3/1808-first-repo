@@ -6,9 +6,7 @@ on:
     branches:
       - main
       - master
-    paths-ignore:
-      - 'mychar/values-image.yaml'
-      - 'mychar/values.yaml'
+
 
 
 permissions: write-all
@@ -48,5 +46,5 @@ jobs:
           git config --global user.email "github-actions@github.com"
           git status
           git add .
-          git commit -m "Update image tag to 0.${{ github.run_number }}"
+          git commit -m "Update image tag to 0.${{ github.run_number }}  [skip ci]"
           git push
