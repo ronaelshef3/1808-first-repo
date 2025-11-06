@@ -7,8 +7,10 @@ metadata:
   labels:
     {{- include "mychar.fullname" $ | nindent 4 }}
 spec:
+  schedule: {{ $job.schedule | quote }}
   concurrencyPolicy: {{ $job.concurrencyPolicy }}
   failedJobsHistoryLimit: {{ $job.failedJobsHistoryLimit }}
+  successfulJobsHistoryLimit: {{ $job.successfulJobsHistoryLimit }}
   jobTemplate:
     spec:
       template:
@@ -17,19 +19,22 @@ spec:
             app: {{ include "mychar.fullname" $ }}
             cron: {{ $jobname }}
         spec:
-        {{- if hasKey $job "imagePullSecrets" }}
+          {{- if hasKey $job "imagePullSecrets" }}
           imagePullSecrets:
-          - name: {{ $.Release.Name }}-docker
-        {{- end }}
-        {{- if and (hasKey $job "serviceAccount") (hasKey $job.serviceAccount "name") }}
+            - name: {{ $.Release.Name }}-docker
+          {{- end }}
+
+          {{- if and (hasKey $job "serviceAccount") (hasKey $job.serviceAccount "name") }}
           serviceAccountName: {{ $job.serviceAccount.name }}
-        {{- else }}
-          serviceAccountName: {{ $.Release.Name}}-{{ $jobname }}
-        {{- end }}
-        {{- if hasKey $job "securityContext" }}
-          {{- if $job.securityContext.runAsUser }}
+          {{- else }}
+          serviceAccountName: {{ $.Release.Name }}-{{ $jobname }}
+          {{- end }}
+
+          {{- if hasKey $job "securityContext" }}
           securityContext:
+            {{- if $job.securityContext.runAsUser }}
             runAsUser: {{ $job.securityContext.runAsUser }}
+            {{- end }}
             {{- if $job.securityContext.runAsGroup }}
             runAsGroup: {{ $job.securityContext.runAsGroup }}
             {{- end }}
@@ -37,52 +42,55 @@ spec:
             fsGroup: {{ $job.securityContext.fsGroup }}
             {{- end }}
           {{- end }}
-        {{- end }}
+
           containers:
-          - image: {{ $job.image.repository }}:{{ $job.image.tag }}
-            imagePullPolicy: {{ $job.image.imagePullPolicy }}
-            name: {{ $jobname }}
-            {{- with $job.env }}
-            env:
-{{ toYaml . | indent 12 }}
-            {{- end }}
-            {{- with $job.envFrom }}
-            envFrom:
-{{ toYaml . | indent 12 }}
-            {{- end }}
-            {{- with $job.command }}
-            command:
-{{ toYaml . | indent 12 }}
-            {{- end }}
-            {{- with $job.args }}
-            args:
-{{ toYaml . | indent 12 }}
+            - name: {{ $jobname }}
+              image: {{ $job.image.repository }}:{{ $job.image.tag }}
+              imagePullPolicy: {{ $job.image.imagePullPolicy }}
+              {{- with $job.env }}
+              env:
+{{ toYaml . | indent 16 }}
               {{- end }}
-            {{- with $job.resources }}
-            resources:
-{{ toYaml . | indent 14 }}
-            {{- end }}
-            {{- with $job.volumeMounts }}
-            volumeMounts:
-{{ toYaml . | indent 12 }}
-            {{- end }}
+              {{- with $job.envFrom }}
+              envFrom:
+{{ toYaml . | indent 16 }}
+              {{- end }}
+              {{- with $job.command }}
+              command:
+{{ toYaml . | indent 16 }}
+              {{- end }}
+              {{- with $job.args }}
+              args:
+{{ toYaml . | indent 16 }}
+              {{- end }}
+              {{- with $job.resources }}
+              resources:
+{{ toYaml . | indent 16 }}
+              {{- end }}
+              {{- with $job.volumeMounts }}
+              volumeMounts:
+{{ toYaml . | indent 16 }}
+              {{- end }}
+
           {{- with $job.nodeSelector }}
-        nodeSelector:
+          nodeSelector:
 {{ toYaml . | indent 12 }}
-        {{- end }}
-        {{- with $job.affinity }}
-        affinity:
+          {{- end }}
+
+          {{- with $job.affinity }}
+          affinity:
 {{ toYaml . | indent 12 }}
-        {{- end }}
-        {{- with $job.tolerations }}
-        tolerations:
+          {{- end }}
+
+          {{- with $job.tolerations }}
+          tolerations:
 {{ toYaml . | indent 12 }}
-      {{- end }}
-        restartPolicy: {{ $job.restartPolicy }}
-        {{- with $job.volumes }}
-        volumes:
+          {{- end }}
+
+          restartPolicy: {{ $job.restartPolicy }}
+
+          {{- with $job.volumes }}
+          volumes:
 {{ toYaml . | indent 12 }}
-        {{- end }}
-  schedule: {{ $job.schedule | quote }}
-  successfulJobsHistoryLimit: {{ $job.successfulJobsHistoryLimit }}
-{{- end }}
+          {{- end }}
+{{- en
