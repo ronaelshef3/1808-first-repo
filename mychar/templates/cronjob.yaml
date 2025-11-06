@@ -77,12 +77,12 @@ spec:
         {{- with $job.tolerations }}
         tolerations:
 {{ toYaml . | indent 12 }}
-        {{- end }}
-          restartPolicy: {{ $job.restartPolicy }}
-          {{- with $job.volumes }}
-          volumes:
+      {{- end }}
+        restartPolicy: {{ $job.restartPolicy }}
+        {{- with $job.volumes }}
+        volumes:
 {{ toYaml . | indent 12 }}
-          {{- end }}
+        {{- end }}
   schedule: {{ $job.schedule | quote }}
   successfulJobsHistoryLimit: {{ $job.successfulJobsHistoryLimit }}
 {{- end }}
