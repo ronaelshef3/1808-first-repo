@@ -67,17 +67,17 @@ spec:
 {{ toYaml . | indent 12 }}
             {{- end }}
           {{- with $job.nodeSelector }}
-          nodeSelector:
+        nodeSelector:
 {{ toYaml . | indent 12 }}
-          {{- end }}
-          {{- with $job.affinity }}
-          affinity:
+        {{- end }}
+        {{- with $job.affinity }}
+        affinity:
 {{ toYaml . | indent 12 }}
-          {{- end }}
-          {{- with $job.tolerations }}
-          tolerations:
+        {{- end }}
+        {{- with $job.tolerations }}
+        tolerations:
 {{ toYaml . | indent 12 }}
-          {{- end }}
+        {{- end }}
           restartPolicy: {{ $job.restartPolicy }}
           {{- with $job.volumes }}
           volumes:
