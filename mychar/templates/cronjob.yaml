@@ -1,0 +1,39 @@
+{{- if and .Values.cronjob .Values.cronjob.enabled -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: release-name-mychar-full-example-job
+  labels:
+    # --- תיקנתי את הלייבלים ---
+    app.kubernetes.io/name: mychar
+    app.kubernetes.io/instance: release-name
+spec:
+  schedule: {{ .Values.cronjob.schedule | quote }}
+  successfulJobsHistoryLimit: {{ .Values.cronjob.successfulJobsHistoryLimit }}
+  concurrencyPolicy: {{ .Values.cronjob.concurrencyPolicy }}
+  failedJobsHistoryLimit: {{ .Values.cronjob.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: release-name-mychar
+            cron: full-example-job
+        spec:
+          # --- תיקנתי את שם ה-ServiceAccount ---
+          serviceAccountName: release-name-mychar
+
+          containers:
+            - name: full-example-job
+              image: "{{ .Values.cronjob.image.repository }}:{{ .Values.cronjob.image.tag }}"
+              imagePullPolicy: {{ .Values.cronjob.image.pullPolicy }}
+              command:
+                - /bin/sh
+                - -c
+              args:
+                - {{ .Values.cronjob.taskScript | quote }}
+              resources:
+                {{- toYaml .Values.cronjob.resources | nindent 16 }}
+
+          restartPolicy: {{ .Values.cronjob.restartPolicy }}
+  {{- end -}}

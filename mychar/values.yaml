@@ -5,41 +5,44 @@
 # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
 replicaCount: 5
 
+# ... (ערכים אחרים) ...
 
+# הגדרות CronJob
+
+
+# ... (ערכים אחרים) ...
 # ... (כל שאר הערכים שלך)
+cronjob:
+  # --- זה המתג שמפעיל את ה-IF ---
+  #     {{- if and .Values.cronjob .Values.cronjob.enabled -}}
+  enabled: true
 
+  # (ברירת מחדל: כל דקה)
+  schedule: "*/1 * * * *"
+
+  concurrencyPolicy: Replace
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  restartPolicy: OnFailure
+
+  image:
+    repository: busybox
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  # (ברירת מחדל: הפקודה הזו)
+  taskScript: "echo 'Starting job'; sleep 30; echo 'Job finished';"
+
+  # (ברירת מחדל: הקצאת המשאבים הזו)
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
 # הוסף את הבלוק הזה
-jobs:
-  # שם ה-Job הראשון שלך
-  full-example-job:
-    # --- הגדרות בסיסיות ---
-    schedule: "/1 * * * *"
-    concurrencyPolicy: "Replace"
-    failedJobsHistoryLimit: 1
-    successfulJobsHistoryLimit: 3
-    restartPolicy: "OnFailure"
 
-    # --- הגדרות קונטיינר ---
-    image:
-      repository: "busybox" # תחליף במה שצריך
-      tag: "latest"
-      imagePullPolicy: "IfNotPresent"
-
-    # --- פקודות לביצוע ---
-    command:
-      - "/bin/sh"
-      - "-c"
-    args:
-      - "echo 'Starting job'; sleep 30; echo 'Job finished';"
-
-    # אפשר להוסיף גם resources, volumes וכו'
-    resources:
-      requests:
-        cpu: "50m"
-        memory: "64Mi"
-      limits:
-        cpu: "100m"
-        memory: "128Mi"
 
 # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
 image:
